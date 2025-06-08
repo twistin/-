@@ -1,17 +1,53 @@
 import React, { useState } from 'react';
-import { Calendar, ArrowRight, Tag } from 'lucide-react';
-import { blogPosts, BlogPost, getAllTags } from '../data/blogPosts';
+import { Calendar, ArrowRight } from 'lucide-react';
+
+interface BlogPost {
+  id: string;
+  title: string;
+  content: string;
+  date: string;
+  excerpt: string;
+}
 
 const Blog: React.FC = () => {
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
-  const [selectedTag, setSelectedTag] = useState<string | null>(null);
 
-  // Filtrar posts por tag si hay uno seleccionado
-  const filteredPosts = selectedTag 
-    ? blogPosts.filter(post => post.tags?.includes(selectedTag))
-    : blogPosts;
-  
-  const allTags = getAllTags();
+  // Posts estáticos - gestionados localmente
+  const posts: BlogPost[] = [
+    {
+      id: '3',
+      title: 'La Geometría del Silencio',
+      excerpt: 'Explorando cómo los espacios vacíos en la música pueden ser tan expresivos como las notas mismas.',
+      content: `El silencio no es la ausencia de sonido, sino su complemento más profundo. En mis últimas composiciones he estado trabajando con lo que llamo "geometría del silencio" - la forma en que los espacios vacíos crean estructuras tan sólidas como las más densas texturas sonoras.
+
+Cada pausa tiene su peso específico, su densidad emocional. Un silencio de dos segundos después de un crescendo no es igual que el mismo silencio después de un susurro. La diferencia no está en la duración, sino en la expectativa que genera.
+
+He comenzado a mapear estos silencios como si fueran objetos tridimensionales, con volumen, textura y temperatura. Algunos silencios son fríos y metálicos, otros cálidos y envolventes. Esta materialización del vacío me permite componer con él como si fuera otro instrumento.`,
+      date: '2024-12-15'
+    },
+    {
+      id: '2',
+      title: 'Reflexiones sobre el Espacio Sonoro',
+      excerpt: 'Una exploración de cómo el sonido define y transforma nuestros espacios íntimos.',
+      content: `El espacio sonoro es más que un concepto acústico; es una dimensión emocional y perceptiva que nos conecta con lo invisible. En mis últimas composiciones, he estado explorando cómo los silencios pueden ser tan elocuentes como los sonidos más intensos.
+
+Cada obra nace de la observación del entorno, de la escucha atenta de esos momentos donde el mundo parece suspenderse. Es en esa suspensión donde encuentro la materia prima de mi trabajo: la tensión entre lo que se oye y lo que se siente.
+
+El espacio no es solo el contenedor del sonido, sino su co-creador. Una misma pieza suena completamente diferente en una catedral gótica que en un estudio de grabación. Esta variabilidad no es un problema a resolver, sino una característica fundamental que abrazo en mi trabajo.`,
+      date: '2024-11-28'
+    },
+    {
+      id: '1',
+      title: 'Proceso Creativo: Entre el Control y el Azar',
+      excerpt: 'Cómo equilibrar la intención artística con los elementos aleatorios en la composición sonora.',
+      content: `Mi proceso creativo se mueve constantemente entre dos polos: el control absoluto de cada elemento y la apertura total al azar. Esta tensión no es un conflicto, sino el motor de mis obras.
+
+Trabajo con sistemas que permiten que el sonido evolucione de manera impredecible, pero dentro de parámetros que defino cuidadosamente. Es como crear un jardín: plantas las semillas, preparas el terreno, pero no puedes controlar exactamente cómo crecerá cada planta.
+
+En mis últimas piezas he desarrollado lo que llamo "algoritmos orgánicos" - sistemas de generación que imitan procesos naturales. No se trata de usar tecnología por usar, sino de encontrar en ella metáforas para fenómenos que me interesan: la erosión, el crecimiento celular, los patrones fractales.`,
+      date: '2024-10-15'
+    }
+  ];
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -22,6 +58,7 @@ const Blog: React.FC = () => {
     });
   };
 
+  // Vista de post individual
   if (selectedPost) {
     return (
       <div className="min-h-screen bg-white pt-20 md:pt-12">
@@ -38,24 +75,9 @@ const Blog: React.FC = () => {
               <h1 className="text-4xl md:text-5xl font-light mb-6 leading-tight">
                 {selectedPost.title}
               </h1>
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center text-gray-500 text-sm">
-                  <Calendar size={16} className="mr-2" />
-                  {formatDate(selectedPost.date)}
-                </div>
-                {selectedPost.tags && selectedPost.tags.length > 0 && (
-                  <div className="flex items-center space-x-2">
-                    <Tag size={14} className="text-gray-400" />
-                    {selectedPost.tags.map((tag, index) => (
-                      <span 
-                        key={tag}
-                        className="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded-full"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                )}
+              <div className="flex items-center text-gray-500 text-sm">
+                <Calendar size={16} className="mr-2" />
+                {formatDate(selectedPost.date)}
               </div>
             </header>
             
@@ -72,96 +94,46 @@ const Blog: React.FC = () => {
     );
   }
 
+  // Vista de lista de posts - SIN BOTÓN NUEVO POST
   return (
     <div className="min-h-screen bg-white pt-20 md:pt-12">
       <div className="max-w-6xl mx-auto px-6">
-        {/* Header */}
+        {/* Header - SIN BOTÓN NUEVO POST */}
         <header className="mb-16 text-center">
           <h1 className="text-4xl md:text-5xl font-light mb-4 tracking-wide">
             Blog
           </h1>
-          <p className="text-gray-600 text-lg max-w-2xl mx-auto mb-8">
+          <p className="text-gray-600 text-lg max-w-2xl mx-auto">
             Reflexiones sobre el arte sonoro, proceso creativo y experiencias
           </p>
-          
-          {/* Filtros por tags */}
-          {allTags.length > 0 && (
-            <div className="flex flex-wrap justify-center gap-2 max-w-3xl mx-auto">
-              <button
-                onClick={() => setSelectedTag(null)}
-                className={`px-4 py-2 text-sm rounded-full transition-colors ${
-                  selectedTag === null 
-                    ? 'bg-black text-white' 
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
-              >
-                Todos
-              </button>
-              {allTags.map((tag) => (
-                <button
-                  key={tag}
-                  onClick={() => setSelectedTag(selectedTag === tag ? null : tag)}
-                  className={`px-4 py-2 text-sm rounded-full transition-colors ${
-                    selectedTag === tag 
-                      ? 'bg-black text-white' 
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                  }`}
-                >
-                  #{tag}
-                </button>
-              ))}
-            </div>
-          )}
         </header>
 
-        {/* Lista de posts */}
+        {/* Lista de posts - SOLO LECTURA */}
         <div className="grid gap-12 md:gap-16">
-          {filteredPosts.length === 0 ? (
-            <div className="text-center py-16">
-              <p className="text-gray-500 text-lg">
-                {selectedTag ? `No hay posts con el tag "${selectedTag}"` : 'No hay posts disponibles'}
+          {posts.map((post) => (
+            <article 
+              key={post.id}
+              className="border-b border-gray-100 pb-12 last:border-b-0 cursor-pointer group"
+              onClick={() => setSelectedPost(post)}
+            >
+              <div className="flex items-center text-gray-500 text-sm mb-4">
+                <Calendar size={16} className="mr-2" />
+                {formatDate(post.date)}
+              </div>
+              
+              <h2 className="text-2xl md:text-3xl font-light mb-4 group-hover:text-gray-600 transition-colors">
+                {post.title}
+              </h2>
+              
+              <p className="text-gray-700 leading-relaxed mb-6">
+                {post.excerpt}
               </p>
-            </div>
-          ) : (
-            filteredPosts.map((post) => (
-              <article 
-                key={post.id}
-                className="border-b border-gray-100 pb-12 last:border-b-0 cursor-pointer group"
-                onClick={() => setSelectedPost(post)}
-              >
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center text-gray-500 text-sm">
-                    <Calendar size={16} className="mr-2" />
-                    {formatDate(post.date)}
-                  </div>
-                  {post.tags && post.tags.length > 0 && (
-                    <div className="flex items-center space-x-1">
-                      {post.tags.map((tag) => (
-                        <span 
-                          key={tag}
-                          className="text-xs px-2 py-1 bg-gray-100 text-gray-500 rounded-full"
-                        >
-                          #{tag}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                </div>
-                
-                <h2 className="text-2xl md:text-3xl font-light mb-4 group-hover:text-gray-600 transition-colors">
-                  {post.title}
-                </h2>
-                
-                <p className="text-gray-700 leading-relaxed mb-6">
-                  {post.excerpt}
-                </p>
-                
-                <div className="inline-flex items-center text-black hover:text-gray-600 transition-colors">
-                  Leer más <ArrowRight size={16} className="ml-2" />
-                </div>
-              </article>
-            ))
-          )}
+              
+              <div className="inline-flex items-center text-black hover:text-gray-600 transition-colors">
+                Leer más <ArrowRight size={16} className="ml-2" />
+              </div>
+            </article>
+          ))}
         </div>
       </div>
     </div>
