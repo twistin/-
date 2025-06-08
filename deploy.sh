@@ -11,10 +11,10 @@ echo "Deploying to GitHub Pages..."
 rm -rf node_modules/.cache/gh-pages 2>/dev/null || true
 rm -rf .git/worktrees/gh-pages 2>/dev/null || true
 
-# Deploy with minimal options to avoid E2BIG error
-cd dist
-GIT_DISCOVERY_ACROSS_FILESYSTEM=1 npx gh-pages -d . --dest .
-cd ..
+# Deploy from project root to avoid E2BIG error
+# Use --add to avoid removing existing files (reduces file operations)
+# Use --nojekyll to add .nojekyll file automatically
+TOKENIZERS_PARALLELISM=false npx gh-pages -d dist --add --nojekyll --dotfiles
 
 echo "Deployment completed successfully!"
 
